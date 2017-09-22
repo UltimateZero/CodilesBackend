@@ -21,24 +21,42 @@ db.once('open', function () {
 
 function getAccounts(skip, limit, search) {
     return new Promise((resolve, reject) => {
-        Account.find({'id' : new RegExp(search || '', 'i')}, (err, accounts) => {
+        Account.find({ 'id': new RegExp(search, 'i') }, (err, accounts) => {
             if (err) {
                 reject(err);
                 return console.error(err);
             }
-            resolve(accounts);
+            resolve(accounts.map(el => { return { id: el.id, total_bill: el.total_bill, total_services: el.total_services }; }));
         }).skip(skip).limit(limit);
     });
 }
 
+function randomIntInc(low, high) {
+    return Math.floor(Math.random() * (high - low + 1) + low);
+}
 
-var acc = new Account({ id: '12223', total_services: 2, total_bill: 434 });
+function generateRandomAccountId() {
+    var numbers = new Array(11);
+    for (var i = 0; i < numbers.length; i++) {
+        numbers[i] = randomIntInc(1, 9)
+    }
+    return numbers.join('');
+}
 
-// acc.save((err, acc)=>{
-//     if(err) return console.error(err);
-//     console.log('Saved');
-// });
+function setup() {
+    Account.remove({});
+    for (var i = 0; i < 100; i++) {
+        var acc = new Account({ id: generateRandomAccountId(), total_services: randomIntInc(1, 5), total_bill: randomIntInc(0, 20000) + Math.random() });
+        acc.save((err, acc) => {
+            if (err) return console.error(err);
+        });
+    }
+    console.log('Created accounts')
+}
 
 
 
-module.exports = { 'db': db, 'getAccounts': getAccounts };
+
+
+
+module.exports = { 'db': db, 'getAccounts': getAccounts, 'setup': setup };

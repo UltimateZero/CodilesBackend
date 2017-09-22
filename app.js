@@ -20,10 +20,12 @@ app.get('/', (req, res) => {
 
 var db = require('./db');
 
+// db.setup();
+
 app.get('/getAccounts', (req, res) => {
   let skip = req.query.skip || 0;
   let limit = req.query.limit || 20;
-  let search = req.query.search;
+  let search = req.query.search || '';
   db.getAccounts(parseInt(skip), parseInt(limit), search)
     .then(accounts => {
       res.json(accounts);
