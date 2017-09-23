@@ -26,6 +26,7 @@ app.get('/getAccounts', (req, res) => {
   let skip = req.query.skip || 0;
   let limit = req.query.limit || 20;
   let search = req.query.search || '';
+  // console.log('Got request')
   db.getAccounts(parseInt(skip), parseInt(limit), search)
     .then(accounts => {
       res.json(accounts);
